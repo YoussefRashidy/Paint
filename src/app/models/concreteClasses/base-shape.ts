@@ -1,5 +1,5 @@
-import {ShapeDto, ShapeType} from '../dtos/shape.dto';
-import {ShapeJSON, ShapeStyles} from '../Shape';
+import { ShapeDto, ShapeType } from '../dtos/shape.dto';
+import { ShapeStyles } from '../dtos/shape.dto';
 
 export abstract class BaseShape implements ShapeDto {
 
@@ -47,11 +47,11 @@ export abstract class BaseShape implements ShapeDto {
   }
 
   startDrag(poniterX: number, pointerY: number) {
-    this._dragOffset = {x: poniterX - this.x, y: pointerY - this.y};
+    this._dragOffset = { x: poniterX - this.x, y: pointerY - this.y };
   }
 
   dragTo(pointerX: number, pointerY: number) {
-    if (!this._dragOffset){
+    if (!this._dragOffset) {
       return
     }
     this.x = pointerX - this._dragOffset.x;
