@@ -54,12 +54,5 @@ export class LineShape extends BaseShape implements LineDto {
     return false;
   }
 
-  endReshape(): void {
-  }
 
-  reshaping(pointX: number, pointY: number): void {
-  }
-
-  startReshap(pointX: number, pointY: number): void {
-  }
 }

@@ -44,12 +44,5 @@ export class PolygonShape extends BaseShape implements PolygonDto {
     };
   }
 
-  endReshape(): void {
-  }
 
-  reshaping(pointX: number, pointY: number): void {
-  }
-
-  startReshap(pointX: number, pointY: number): void {
-  }
 }
