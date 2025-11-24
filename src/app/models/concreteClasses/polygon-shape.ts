@@ -3,11 +3,12 @@ import {PolygonDto} from '../dtos/polygon.dto';
 
 
 export class PolygonShape extends BaseShape implements PolygonDto {
-  override type = 'polygon' as const;
+  override type: 'polygon' | "triangle" ;
   points: { x: number, y: number }[];
 
   constructor(dto: PolygonDto) {
     super(dto);
+    this.type = dto.type;
     this.points = dto.points ?? [];
   }
 
