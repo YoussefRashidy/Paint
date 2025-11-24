@@ -40,7 +40,7 @@ export class RectangleShape extends BaseShape {
   override getProps(): RectangleDto {
     return {
       id: this.id,
-      type: 'rect',
+      type: 'rectangle',
       x: this.x,
       y: this.y,
       width: this.width,
