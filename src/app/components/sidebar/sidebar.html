@@ -1,0 +1,187 @@
+<div class="panel" *ngIf="selectedShape() as shape; else emptyState">
+  <h3>Shape Properties</h3>
+
+  <!-- Position Section -->
+  <div class="section-header">Position</div>
+
+  <div class="property-group">
+    <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="!isLine() && !isFreeDraw()">
+      <label>X Position</label>
+      <input
+        type="number"
+        aria-label="x-position"
+        [value]="getValue('x')"
+        (input)="update('x', $any($event.target).value)"
+        step="1"
+      />
+    </div>
+
+    <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="!isLine() && !isFreeDraw()">
+      <label>Y Position</label>
+      <input
+        type="number"
+        aria-label="y-position"
+        [value]="getValue('y')"
+        (input)="update('y', $any($event.target).value)"
+        step="1"
+      />
+    </div>
+  </div>
+
+  <!-- Dimensions Section -->
+  <div class="section-header">Dimensions</div>
+
+  <div class="property-group">
+    <!-- Rectangle/Square dimensions -->
+    <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="hasWidth()">
+      <label>Width</label>
+      <input
+        type="number"
+        aria-label="width"
+        [value]="getValue('width')"
+        (input)="update('width', $any($event.target).value)"
+        min="1"
+        step="1"
+      />
+    </div>
+
+    <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="hasHeight()">
+      <label>Height</label>
+      <input
+        type="number"
+        aria-label="height"
+        [value]="getValue('height')"
+        (input)="update('height', $any($event.target).value)"
+        min="1"
+        step="1"
+      />
+    </div>
+
+    <!-- Circle radius -->
+    <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="hasRadius()">
+      <label>Radius</label>
+      <input
+        type="number"
+        aria-label="radius"
+        [value]="getValue('radius')"
+        (input)="update('radius', $any($event.target).value)"
+        min="1"
+        step="1"
+      />
+    </div>
+
+    <!-- Ellipse radii -->
+    <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="hasRadii()">
+      <label>Radius X</label>
+      <input
+        type="number"
+        aria-label="radiusX"
+        [value]="getValue('radiusX')"
+        (input)="update('radiusX', $any($event.target).value)"
+        min="1"
+        step="1"
+      />
+    </div>
+
+    <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="hasRadii()">
+      <label>Radius Y</label>
+      <input
+        type="number"
+        aria-label="radiusY"
+        [value]="getValue('radiusY')"
+        (input)="update('radiusY', $any($event.target).value)"
+        min="1"
+        step="1"
+      />
+    </div>
+
+    <!-- Rotation -->
+    <div class="input-wrapper input-with-unit" data-unit="°">
+      <label>Rotation</label>
+      <input
+        type="number"
+        aria-label="rotation"
+        [value]="getValue('rotation')"
+        (input)="update('rotation', $any($event.target).value)"
+        step="1"
+        min="-360"
+        max="360"
+      />
+    </div>
+  </div>
+
+  <!-- Appearance Section -->
+  <div class="section-header">Appearance</div>
+
+  <div class="property-group">
+    <div class="input-wrapper">
+      <label>Fill Color</label>
+      <input
+        type="color"
+        aria-label="fill-color"
+        [value]="getValue('fill')"
+        (input)="update('fill', $any($event.target).value)"
+      />
+    </div>
+
+    <div class="input-wrapper">
+      <label>Stroke Color</label>
+      <input
+        type="color"
+        aria-label="stroke-color"
+        [value]="getValue('stroke')"
+        (input)="update('stroke', $any($event.target).value)"
+      />
+    </div>
+
+    <div class="input-wrapper input-with-unit" data-unit="px">
+      <label>Stroke Width</label>
+      <input
+        type="number"
+        aria-label="stroke-width"
+        [value]="getValue('strokeWidth')"
+        (input)="update('strokeWidth', $any($event.target).value)"
+        min="0"
+        step="1"
+      />
+    </div>
+
+    <div class="input-wrapper">
+      <label>Opacity</label>
+      <input
+        type="range"
+        aria-label="opacity"
+        [value]="getValue('opacity')"
+        (input)="update('opacity', $any($event.target).value)"
+        min="0"
+        max="1"
+        step="0.01"
+      />
+      <div style="text-align: right; font-size: 12px; color: #64748b; margin-top: 4px">
+        {{ (getValue('opacity') * 100).toFixed(0) }}%
+      </div>
+    </div>
+  </div>
+  <div class="duplicate-delete">
+    <button class="duplicate-button" (click)="duplicateShape()">Duplicate</button>
+    <button class="delete-button" (click)="deleteShape()">Delete</button>
+  </div>
+</div>
+
+<ng-template #emptyState>
+  <div class="panel">
+    <h3>Shape Properties</h3>
+    <div class="empty-state">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
+        />
+      </svg>
+      <h4>No Shape Selected</h4>
+      <p>Select a shape on the canvas to view and edit its properties</p>
+    </div>
+  </div>
+</ng-template>
