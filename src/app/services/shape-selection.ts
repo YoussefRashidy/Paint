@@ -1,5 +1,6 @@
-import {Injectable, signal, WritableSignal} from '@angular/core';
-import {BaseShape} from '../models/concreteClasses/base-shape';
+import { Injectable, signal, WritableSignal } from '@angular/core';
+import { BaseShape } from '../models/concreteClasses/base-shape';
+import Konva from 'konva';
 
 
 @Injectable({
@@ -8,6 +9,7 @@ import {BaseShape} from '../models/concreteClasses/base-shape';
 export class ShapeSelection {
   selectedShape: WritableSignal<BaseShape | null> = signal<BaseShape | null>(null);
   isDrawing: WritableSignal<boolean> = signal<boolean>(false);
+  selectedKonvaShape: WritableSignal<Konva.Shape | null> = signal<Konva.Shape | null>(null);
 
   get currentStyles() {
     const shape = this.selectedShape();
@@ -24,6 +26,14 @@ export class ShapeSelection {
   }
   getIsDrawing() {
     return this.isDrawing();
+  }
+
+  getKonvaShape() {
+    return this.selectedKonvaShape();
+  }
+
+  setKonvaShape(shape: Konva.Shape | null) {
+    this.selectedKonvaShape.set(shape)
   }
 
 }

@@ -80,10 +80,7 @@ export class ShapesBar {
     const selected = this.shapeService.selectedShape();
     return selected ? selected.type === shapeName : false;
   }
-  // setStyle(key: string, value: any) {
-  //   this.shapeStyles[key] = value;
-  //   const selectedShape = this.shapeService.selectedShape();
-  // }
+
   applyStyle(attr: keyof ShapeStyles, value: any) {
     this.currentStyles[attr] = value;
     this.shapeStyles[attr] = value;

@@ -1,6 +1,8 @@
 import { Signal } from "@angular/core";
 import Konva from "konva";
 import { MockShapeFactory } from "../Factories/MockShapeFactory";
+import { Shape } from "konva/lib/Shape";
+import { ShapesLogic } from "./shapes-logic";
 export class KonvaHandler {
     private stage: Konva.Stage;
     private layer: Konva.Layer;
@@ -12,17 +14,20 @@ export class KonvaHandler {
     private mockFactory = new MockShapeFactory();
     private shapeService: any;
     private isDrawingMode = false;
-    private shapes : Konva.Shape[] = [];
+    // Array to keep track of created shapes
+    private shapes: Konva.Shape[] = [];
+
+    private shapeLogic: ShapesLogic;
 
     constructor(containerId: string, width: number, height: number, shapeService: any) {
         this.shapeService = shapeService;
         this.stage = new Konva.Stage({ container: containerId, width: width, height: height });
         this.layer = new Konva.Layer();
         this.stage.add(this.layer);
+        this.shapeLogic = new ShapesLogic(shapeService);
         this.onMouseDown();
         this.onMouseMove();
         this.onMouseUp();
-
     }
 
     get selectedShape() {
@@ -42,7 +47,7 @@ export class KonvaHandler {
     onMouseDown() {
         this.stage.on("mousedown touchdown", () => {
             let Position = this.stage.getPointerPosition();
-            if (!Position ||!this.isDrawing) return;
+            if (!Position || !this.isDrawing) return;
             this.iniX = Position.x;
             this.iniY = Position.y;
             let styles = this.selectedShape.shapeStyles;
@@ -115,10 +120,14 @@ export class KonvaHandler {
     }
 
     // TODO convert to SVG shape and add to svg canvas
+    // TODO send request to backend to create shape
     onMouseUp() {
         this.stage.on("mouseup touchend", () => {
             if (this.mockShape) {
+                // Stay stale until backend responds with created shape
+
                 this.layer.add(this.mockShape);
+                this.shapeLogic.selectShape(this.mockShape);
                 this.layer.batchDraw();
                 this.shapes.push(this.mockShape);
                 this.mockShape = undefined;
