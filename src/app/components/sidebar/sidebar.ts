@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { ShapeSelection } from '../../services/shape-selection';
+import { ShapesLogic } from '../drawing-canvas/shapes-logic';
 
 
 @Component({
@@ -13,6 +14,7 @@ import { ShapeSelection } from '../../services/shape-selection';
 export class Sidebar {
   private shapeService = inject(ShapeSelection);
   public selectedShape = computed(() => this.shapeService.getKonvaShape());
+  private shapeLogic = new ShapesLogic(this.shapeService);
   private maxWidth = document.querySelector('#drawing-canvas')?.clientWidth || 800;
   private maxHeight = document.querySelector('#drawing-canvas')?.clientHeight || 600;
 
@@ -140,6 +142,11 @@ export class Sidebar {
     // offset the cloned shape for visibility
     clone.x(clone.x() + 20);
     clone.y(clone.y() + 20);
+    this.shapeLogic.onDrawingShape(clone);
+    this.shapeLogic.onShapeDragEnd(clone);
+    this.shapeLogic.onShapeTransformEnd(clone);
+    this.shapeLogic.onShapeAttStyleChange(clone);
+    this.shapeLogic.selectShape(clone);
     shape.getLayer()?.add(clone);
     shape.getLayer()?.batchDraw();
   }

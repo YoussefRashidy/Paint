@@ -27,7 +27,7 @@ export class ShapesLogic {
         shape.on("click", () => {
             console.log("Shape clicked:", shape);
             console.log("Currently selected shape:", this.shapeService.getKonvaShape());
-            if (this.shapeService.getKonvaShape() === shape) {
+            if (this.shapeService.getKonvaShape() === shape && !this.shapeService.getIsDrawing()) {
                 this.shapeService.setSelectedShape(null);
                 console.log("Shape deselected");
             } else {
