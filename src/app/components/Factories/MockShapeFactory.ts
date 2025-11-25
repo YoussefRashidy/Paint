@@ -31,6 +31,7 @@ export class MockShapeFactory {
                     strokeWidth: 2,
                     draggable: true,
                     id: this.generateId(),
+                    type: 'rectangle',
                     ...styles
                 });
 
@@ -45,6 +46,7 @@ export class MockShapeFactory {
                     strokeWidth: 2,
                     draggable: true,
                     id: this.generateId(),
+                    type: 'square',
                     ...styles
                 });
 
@@ -58,6 +60,7 @@ export class MockShapeFactory {
                     strokeWidth: 2,
                     draggable: true,
                     id: this.generateId(),
+                    type: 'circle',
                     ...styles
                 });
 
@@ -72,16 +75,22 @@ export class MockShapeFactory {
                     strokeWidth: 2,
                     draggable: true,
                     id: this.generateId(),
+                    type: 'ellipse',
                     ...styles
                 });
 
             case 'line':
                 return new Konva.Line({
+                    x: x,
+                    y: y,
+                    offsetX: x,
+                    offsetY: y,
                     points: [x, y, x, y], // start = end, will update dynamically
                     stroke: 'black',
                     strokeWidth: 2,
                     draggable: true,
                     id: this.generateId(),
+                    type: 'line',
                     ...styles
                 });
 
@@ -96,10 +105,15 @@ export class MockShapeFactory {
                     strokeWidth: 2,
                     draggable: true,
                     id: this.generateId(),
+                    type: 'triangle',
                     ...styles
                 });
             case 'free-draw':
                 return new Konva.Line({
+                    x: x,
+                    y: y,
+                    offsetX: x,
+                    offsetY: y,
                     points: [x, y], // start point, will update dynamically
                     stroke: 'black',
                     strokeWidth: 2,
@@ -107,6 +121,7 @@ export class MockShapeFactory {
                     lineCap: 'round',
                     lineJoin: 'round',
                     id: this.generateId(),
+                    type: 'free-draw',
                     ...styles
                 })
 
