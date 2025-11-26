@@ -1,7 +1,81 @@
 <div class="panel" *ngIf="showPanel() as shape; else emptyState">
   <h3>Shape Properties</h3>
+<div *ngIf="isText()">
+  <div class="section-header">Text Options</div>
 
-  <!-- Position Section -->
+  <div class="property-group">
+    
+    <div class="text-style-toolbar">
+      <button 
+        class="style-btn bold" 
+        [class.active]="isBold()" 
+        (click)="toggleTextStyle('bold')"
+        title="Bold">
+        B
+      </button>
+
+      <button 
+        class="style-btn italic" 
+        [class.active]="isItalic()" 
+        (click)="toggleTextStyle('italic')"
+        title="Italic">
+        I
+      </button>
+
+      <button 
+        class="style-btn underline" 
+        [class.active]="isUnderline()" 
+        (click)="toggleTextStyle('underline')"
+        title="Underline">
+        U
+      </button>
+    </div>
+    
+    <div class="input-wrapper">
+       <label>Content</label>
+       </div>
+    </div>
+</div>
+  <div *ngIf="isText()">
+    <div class="section-header">Text Options</div>
+
+    <div class="property-group">
+      <div class="input-wrapper">
+        <label>Content</label>
+        <input 
+          type="text" 
+          [value]="getValue('text')" 
+          (input)="updateText('text', $any($event.target).value)" 
+        />
+      </div>
+
+      <div class="input-wrapper input-with-unit" data-unit="px">
+        <label>Font Size</label>
+        <input 
+          type="number" 
+          [value]="getValue('fontSize')" 
+          (input)="updateText('fontSize', $any($event.target).value)"
+          min="8"
+          step="1"
+        />
+      </div>
+
+      <div class="input-wrapper">
+        <label>Font Family</label>
+        <select 
+          style="width: 100%; padding: 8px; border-radius: 8px; border: 2px solid #e2e8f0;"
+          [value]="getValue('fontFamily')" 
+          (change)="updateText('fontFamily', $any($event.target).value)">
+          <option value="Arial">Arial</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Courier New">Courier New</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Impact">Impact</option>
+        </select>
+      </div>
+    </div>
+  </div>
   <div class="section-header">Position</div>
 
   <div class="property-group">
@@ -28,11 +102,9 @@
     </div>
   </div>
 
-  <!-- Dimensions Section -->
   <div class="section-header">Dimensions</div>
 
   <div class="property-group">
-    <!-- Rectangle dimensions -->
     <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="hasWidth()">
       <label>Width</label>
       <input
@@ -57,7 +129,6 @@
       />
     </div>
 
-    <!-- Square side -->
     <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="isSquare()">
       <label>Side</label>
       <input
@@ -70,7 +141,6 @@
       />
     </div>
 
-    <!-- Triangle side -->
     <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="isTriangle()">
       <label>Side</label>
       <input
@@ -83,7 +153,6 @@
       />
     </div>
 
-    <!-- Line Length -->
     <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="isLine()">
       <label>Length</label>
       <input
@@ -98,7 +167,6 @@
       />
     </div>
 
-    <!-- Circle radius -->
     <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="hasRadius()">
       <label>Radius</label>
       <input
@@ -111,7 +179,6 @@
       />
     </div>
 
-    <!-- Ellipse radii -->
     <div class="input-wrapper input-with-unit" data-unit="px" *ngIf="hasRadii()">
       <label>Radius X</label>
       <input
@@ -136,7 +203,6 @@
       />
     </div>
 
-    <!-- Rotation -->
     <div class="input-wrapper input-with-unit" data-unit="°">
       <label>Rotation</label>
       <input
@@ -151,7 +217,6 @@
     </div>
   </div>
 
-  <!-- Appearance Section -->
   <div class="section-header">Appearance</div>
 
   <div class="property-group">
@@ -225,4 +290,5 @@
       <p>Select a shape on the canvas to view and edit its properties</p>
     </div>
   </div>
+
 </ng-template>

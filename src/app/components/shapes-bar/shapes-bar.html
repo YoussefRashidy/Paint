@@ -2,11 +2,11 @@
  <button mat-button [matMenuTriggerFor]="fileMenu">File</button>
 
   <mat-menu #fileMenu="matMenu" >
-    <button mat-menu-item (click)="onNew()" style="width: 100px;">New</button>
+    <button mat-menu-item (click)="onNew()" style="width: 100px; text-align:center; width:100%;">New</button>
     
-    <button mat-menu-item (click)="fileInput1.click()" style="width: 100px;">Import</button>
+    <button mat-menu-item (click)="fileInput1.click()" style="width: 100px; text-align:center; width:100%;">Import</button>
 
-    <button mat-menu-item (click)="onExportJson()" style="width: 100px;">Export</button>
+    <button mat-menu-item (click)="onExportJson()" style="width: 100px; text-align:center; width:100%;">Export</button>
   </mat-menu>
   <input
     type="file"
@@ -24,6 +24,9 @@
   >
   <button (click)="fileInput.click()" style="width: 100px;">
     Add Image
+  </button>
+  <button mat-icon-button (click)="onAddText()" title="Add Text">
+  <span style="font-weight: bold; font-size: 18px;">T</span>
   </button>
   <div>
     <button (click)="onClick('circle')" [class.selected]="isSelected('circle')" title="Circle">

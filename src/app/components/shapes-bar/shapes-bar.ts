@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { HttpClient } from '@angular/common/http';
 import { ShapesLogic } from '../../components/drawing-canvas/shapes-logic'; 
 import { JsonTool } from '../../models/concreteClasses/json-tool';
+import { TextTool } from '../../models/concreteClasses/text-tool'; 
 @Component({
   selector: 'app-shapes-bar',
   imports: [CommonModule, FormsModule, MatMenuModule, MatButtonModule],
@@ -35,6 +36,8 @@ export class ShapesBar {
   public shapesLogic = new ShapesLogic(this.shapeService);
   public imageTool = new ImageTool(this.shapesLogic);
   public jsonTool = new JsonTool(this.shapesLogic, this.shapeService);
+
+  public textTool = new TextTool(this.shapesLogic);
 
   lineCaps: ('butt' | 'round' | 'square')[] = ['butt', 'round', 'square'];
   strokeDashArrays: ([number, number])[] = [[4, 2], [8, 4], [2, 6]];
@@ -123,4 +126,13 @@ onImageSelected(event: Event) {
     this.imageTool.uploadImage(event, layer);
   }
 }
+
+onAddText() {
+    const layer = this.shapeService.getMainLayer();
+    if (layer) {
+      this.textTool.addText(layer);
+    } else {
+      console.warn("No active layer to add text");
+    }
+  }
 }

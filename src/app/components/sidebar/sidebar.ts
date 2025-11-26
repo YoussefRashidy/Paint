@@ -240,4 +240,84 @@ export class Sidebar {
   generateId(): string {
     return 'shape_' + crypto.randomUUID();
   }
+  isText = computed(() => {
+    const type = this.shapeType();
+    return type === 'text' || type === 'Text';
+  });
+
+  updateText(attr: string, value: any) {
+    const shape = this.shapeService.getKonvaShape();
+    if (shape == null) return;
+    
+    const numValue = Number(value);
+
+    switch (attr) {
+      case 'text':
+        (shape as any).text(value);
+        break;
+        
+      case 'fontSize':
+        if (!isNaN(numValue)) {
+            (shape as any).fontSize(Math.max(1, numValue));
+        }
+        break;
+        
+      case 'fontFamily':
+        (shape as any).fontFamily(value);
+        break;
+    }
+
+    shape.getLayer()?.batchDraw();
+  }
+
+  isBold = computed(() => {
+    const shape = this.selectedShape();
+    const style = (shape as any)?.fontStyle?.() || '';
+    return style.includes('bold');
+  });
+
+  isItalic = computed(() => {
+    const shape = this.selectedShape();
+    const style = (shape as any)?.fontStyle?.() || '';
+    return style.includes('italic');
+  });
+
+  isUnderline = computed(() => {
+    const shape = this.selectedShape();
+    return (shape as any)?.textDecoration?.() === 'underline';
+  });
+
+
+  toggleTextStyle(type: 'bold' | 'italic' | 'underline') {
+    const shape = this.shapeService.getKonvaShape();
+    if (!shape) return;
+
+    if (type === 'underline') {
+      const current = (shape as any).textDecoration();
+      (shape as any).textDecoration(current === 'underline' ? '' : 'underline');
+    
+    } else {
+
+      let currentStyle = (shape as any).fontStyle() || 'normal';
+      
+      let hasBold = currentStyle.includes('bold');
+      let hasItalic = currentStyle.includes('italic');
+
+      if (type === 'bold') hasBold = !hasBold;
+      if (type === 'italic') hasItalic = !hasItalic;
+
+      let newStyle = 'normal';
+      if (hasBold && hasItalic) {
+        newStyle = 'italic bold';
+      } else if (hasBold) {
+        newStyle = 'bold';
+      } else if (hasItalic) {
+        newStyle = 'italic';
+      }
+
+      (shape as any).fontStyle(newStyle);
+    }
+
+    shape.getLayer()?.batchDraw();
+  }
 }
