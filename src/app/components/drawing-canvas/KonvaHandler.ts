@@ -2,8 +2,10 @@ import Konva from "konva";
 import { MockShapeFactory } from "../Factories/MockShapeFactory";
 import { ShapesLogic } from "./shapes-logic";
 import { EraserTool } from '../../models/concreteClasses/eraser-tool';
+import { HistoryService } from "../../services/history.service"; 
 
 export class KonvaHandler {
+    private historyService: HistoryService;
     private eraserTool: EraserTool;
     private stage: Konva.Stage;
     private layer: Konva.Layer;
@@ -23,11 +25,13 @@ export class KonvaHandler {
     private shapeLogic: ShapesLogic;
     private transformer: Konva.Transformer;
 
-    constructor(containerId: string, width: number, height: number, shapeService: any) {
+    constructor(containerId: string, width: number, height: number, shapeService: any, historyService: HistoryService) {
         this.shapeService = shapeService;
+        this.historyService = historyService;
         this.stage = new Konva.Stage({ container: containerId, width: width, height: height });
         this.layer = new Konva.Layer();
         this.stage.add(this.layer);
+        
         this.transformer = new Konva.Transformer({
             nodes: [],
             padding: 5,
@@ -64,6 +68,7 @@ export class KonvaHandler {
         this.layer.add(this.transformer);
 
         this.selectionRectangle = new Konva.Rect({
+            name: 'selectionRectangle',
             fill: 'rgba(0, 161, 255, 0.3)',
             visible: false,
             stroke: '#00a1ff',
@@ -74,10 +79,21 @@ export class KonvaHandler {
 
         this.shapeService.setMainLayer(this.layer);
         this.shapeLogic = new ShapesLogic(shapeService);
+        this.historyService.init(this.shapeLogic);
         this.eraserTool = new EraserTool(this.shapeLogic);
+        
         this.onMouseDown();
         this.onMouseMove();
         this.onMouseUp();
+
+        this.stage.on('dragend transformend', (e) => {
+            if (e.target === this.stage || e.target === (this.transformer as any)) return;
+            this.historyService.saveState();
+        });
+
+        setTimeout(() => {
+            this.historyService.saveState();
+        }, 100);
     }
 
     public updateSelection(selectedShape: any) {
@@ -220,6 +236,7 @@ export class KonvaHandler {
 
     onMouseUp() {
         this.stage.on("mouseup touchend", () => {
+            const wasErasing = this.shapeService.getSelectedShape() === 'eraser';
             this.eraserTool.stopErasing();
             this.isSelecting = false;
 
@@ -233,27 +250,41 @@ export class KonvaHandler {
                 this.layer.batchDraw();
                 this.shapeService.addToShapesArray(this.mockShape);
                 this.mockShape = undefined;
+                this.historyService.saveState();
                 return;
             }
 
-            if (this.selectionRectangle.visible()) {
-                const box = this.selectionRectangle.getClientRect();
-                this.selectionRectangle.visible(false);
-                
-                const shapes = this.layer.getChildren().filter((shape) => {
-                    if (shape === this.selectionRectangle || shape === this.transformer) return false;
-                    return Konva.Util.haveIntersection(box, shape.getClientRect());
-                }) as Konva.Shape[];
+            if (wasErasing) {
+                this.historyService.saveState();
+            }
 
-                this.transformer.nodes(shapes);
-                this.shapeService.setSelectedShapes(shapes);
-                
-                if (shapes.length === 1) {
-                    this.shapeService.setKonvaShape(shapes[0]);
-                } else {
+            if (this.selectionRectangle.visible()) {
+                const width = this.selectionRectangle.width();
+                const height = this.selectionRectangle.height();
+                this.selectionRectangle.visible(false);
+
+                const isClick = Math.abs(width) < 5 && Math.abs(height) < 5;
+
+                if (isClick) {
+                    this.transformer.nodes([]);
                     this.shapeService.setKonvaShape(null);
+                    this.shapeService.setSelectedShapes([]);
+                } else {
+                    const box = this.selectionRectangle.getClientRect();
+                    const shapes = this.layer.getChildren().filter((shape) => {
+                        if (shape === this.selectionRectangle || shape === this.transformer) return false;
+                        return Konva.Util.haveIntersection(box, shape.getClientRect());
+                    }) as Konva.Shape[];
+
+                    this.transformer.nodes(shapes);
+                    this.shapeService.setSelectedShapes(shapes);
+                    
+                    if (shapes.length === 1) {
+                        this.shapeService.setKonvaShape(shapes[0]);
+                    } else {
+                        this.shapeService.setKonvaShape(null);
+                    }
                 }
-                
                 this.layer.batchDraw();
             }
         });

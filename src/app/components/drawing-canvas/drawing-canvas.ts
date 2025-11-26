@@ -4,6 +4,7 @@ import { NgIf } from '@angular/common';
 import Konva from 'konva';
 import { KonvaHandler } from './KonvaHandler';
 import { ShapesLogic } from './shapes-logic';
+import { HistoryService } from '../../services/history.service'; 
 
 @Component({
   selector: 'app-drawing-canvas',
@@ -15,18 +16,19 @@ export class DrawingCanvas implements AfterViewInit {
   private readonly shapeService = inject(ShapeSelection);
   private readonly elementRef = inject(ElementRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly historyService = inject(HistoryService); 
 
   menuPosition = { x: 0, y: 0 };
   
   selectedShape: Konva.Shape | null = null;
   selectedShapes: Konva.Shape[] = [];
-
   private konvaHandler: KonvaHandler | null = null;
   private shapesLogic: ShapesLogic;
 
   constructor() {
     this.shapesLogic = new ShapesLogic(this.shapeService);
-
+    this.historyService.init(this.shapesLogic);
+    
     effect(() => {
       this.selectedShape = this.shapeService.getKonvaShape();
       this.selectedShapes = this.shapeService.getSelectedShapes();
@@ -62,7 +64,13 @@ export class DrawingCanvas implements AfterViewInit {
 
   initalizeKonva() {
     const containerEl = document.getElementById('mock-canvas')!;
-    this.konvaHandler = new KonvaHandler('mock-canvas', containerEl.clientWidth, containerEl.clientHeight, this.shapeService);
+    this.konvaHandler = new KonvaHandler(
+        'mock-canvas', 
+        containerEl.clientWidth, 
+        containerEl.clientHeight, 
+        this.shapeService,
+        this.historyService 
+    ); 
   }
 
   updateMenuPosition() {
@@ -154,6 +162,7 @@ export class DrawingCanvas implements AfterViewInit {
         this.shapeService.setSelectedShapes(newShapes);
         this.konvaHandler?.updateSelection(null); 
     }
+    this.historyService.saveState();
   }
 
   delete() {
@@ -170,6 +179,7 @@ export class DrawingCanvas implements AfterViewInit {
     this.shapeService.setSelectedShapes([]);
     this.konvaHandler?.updateSelection(null);
     layer?.batchDraw();
+    this.historyService.saveState();
   }
 
   toggleStyle(type: 'bold' | 'italic' | 'underline') {
@@ -194,6 +204,7 @@ export class DrawingCanvas implements AfterViewInit {
       (this.selectedShape as any).fontStyle(newStyle);
     }
     this.selectedShape.getLayer()?.batchDraw();
+    this.historyService.saveState();
   }
 
   updateFontSize(val: any) {
@@ -203,8 +214,10 @@ export class DrawingCanvas implements AfterViewInit {
     if (!isNaN(size) && size > 0) {
       (this.selectedShape as any).fontSize(size);
       this.selectedShape.getLayer()?.batchDraw();
+      this.historyService.saveState();
     }
   }
+
   removeErasure() {
     if (!this.selectedShape) return;
 
@@ -241,6 +254,7 @@ export class DrawingCanvas implements AfterViewInit {
         }
         
         layer?.batchDraw();
+        this.historyService.saveState();
       }
     }
   }

@@ -20,6 +20,7 @@ import { JsonTool } from '../../models/concreteClasses/json-tool';
 import { TextTool } from '../../models/concreteClasses/text-tool'; 
 import { EraserTool } from '../../models/concreteClasses/eraser-tool';
 import { XmlTool } from '../../models/concreteClasses/xml-tool';
+import { HistoryService } from '../../services/history.service';
 import Konva from 'konva';
 @Component({
   selector: 'app-shapes-bar',
@@ -36,6 +37,7 @@ export class ShapesBar {
   strokeWidths: number[] = [1, 2, 4, 6];
   opacities: number[] = [1, 0.75, 0.5, 0.25];
   // for Lines 
+  private historyService = inject(HistoryService);
   public shapesLogic = new ShapesLogic(this.shapeService);
   public imageTool = new ImageTool(this.shapesLogic);
   public jsonTool = new JsonTool(this.shapesLogic, this.shapeService);
@@ -203,4 +205,11 @@ onAddText() {
       event.target.value = '';
     }
   }
+  onUndo() {
+  this.historyService.undo();
+}
+
+onRedo() {
+  this.historyService.redo();
+}
 }

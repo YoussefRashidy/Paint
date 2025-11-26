@@ -27,13 +27,7 @@
   (change)="onImportXml($event)"
   accept=".xml"
 />
-  <input
-    type="file"
-    #fileInput1
-    style="display: none"
-    (change)="onImportJson($event)"
-    accept=".json"
-  />
+
   <input 
     type="file" 
     #fileInput 
@@ -67,6 +61,8 @@
     <path d="M14 10l6-6"/>
   </svg>
 </button>
+<button (click)="onUndo()" title="Undo">Undo ↶</button>
+<button (click)="onRedo()" title="Redo">Redo ↷</button>
 </div>
   <div>
     <button (click)="onClick('circle')" [class.selected]="isSelected('circle')" title="Circle">
