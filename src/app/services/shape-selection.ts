@@ -12,7 +12,7 @@ export class ShapeSelection {
   isDrawing: WritableSignal<boolean> = signal<boolean>(false);
   selectedKonvaShape: WritableSignal<Konva.Shape | null> = signal<Konva.Shape | null>(null);
   styles: WritableSignal<any> = signal<any>({ stroke: '#000000', strokeWidth: 2, fill: '#ffffff', opacity: 1, lineCap: 'butt', dash: [] });
-
+  shapeArray : Konva.Shape[] = [];
   get currentStyles() {
     return this.styles();
   }
@@ -48,6 +48,16 @@ export class ShapeSelection {
   }
   getMainLayer(): Konva.Layer | null {
     return this.mainLayer;
+  }
+
+  addToShapesArray(shape: Konva.Shape) {
+    this.shapeArray.push(shape);
+    console.log(this.shapeArray)
+  }
+
+  removeFromShapesArray(shape: Konva.Shape) {
+    this.shapeArray = this.shapeArray.filter(element => element != shape) ;
+    console.log(this.shapeArray)
   }
 
 }
