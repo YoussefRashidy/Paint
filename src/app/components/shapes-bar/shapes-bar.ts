@@ -18,6 +18,7 @@ import { HttpClient } from '@angular/common/http';
 import { ShapesLogic } from '../../components/drawing-canvas/shapes-logic'; 
 import { JsonTool } from '../../models/concreteClasses/json-tool';
 import { TextTool } from '../../models/concreteClasses/text-tool'; 
+import { EraserTool } from '../../models/concreteClasses/eraser-tool';
 @Component({
   selector: 'app-shapes-bar',
   imports: [CommonModule, FormsModule, MatMenuModule, MatButtonModule],
@@ -36,6 +37,7 @@ export class ShapesBar {
   public shapesLogic = new ShapesLogic(this.shapeService);
   public imageTool = new ImageTool(this.shapesLogic);
   public jsonTool = new JsonTool(this.shapesLogic, this.shapeService);
+  public eraserTool = new EraserTool(this.shapesLogic);
 
   public textTool = new TextTool(this.shapesLogic);
 
@@ -134,5 +136,8 @@ onAddText() {
     } else {
       console.warn("No active layer to add text");
     }
+  }
+  onEraserClick() {
+    this.onClick('eraser');
   }
 }

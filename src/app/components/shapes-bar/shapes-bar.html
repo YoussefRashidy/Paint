@@ -22,12 +22,24 @@
     (change)="onImageSelected($event)" 
     accept="image/*"
   >
-  <button (click)="fileInput.click()" style="width: 100px;">
+  <div>
+  <button (click)="fileInput.click()" title="Add Image" style="width: 100px;">
     Add Image
   </button>
   <button mat-icon-button (click)="onAddText()" title="Add Text">
   <span style="font-weight: bold; font-size: 18px;">T</span>
   </button>
+  <button 
+  (click)="onEraserClick()" 
+  [class.selected]="isSelected('eraser')" 
+  title="Eraser"
+>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L20 20Z" />
+    <path d="M17 17L7 7" />
+  </svg>
+</button>
+</div>
   <div>
     <button (click)="onClick('circle')" [class.selected]="isSelected('circle')" title="Circle">
       <svg width="28" height="28" viewBox="0 0 28 28">

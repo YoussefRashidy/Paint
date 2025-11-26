@@ -1,8 +1,10 @@
 import Konva from "konva";
 import { MockShapeFactory } from "../Factories/MockShapeFactory";
 import { ShapesLogic } from "./shapes-logic";
+import { EraserTool } from '../../models/concreteClasses/eraser-tool';
 
 export class KonvaHandler {
+    private eraserTool: EraserTool;
     private stage: Konva.Stage;
     private layer: Konva.Layer;
     private iniX: number = 0;
@@ -72,6 +74,7 @@ export class KonvaHandler {
 
         this.shapeService.setMainLayer(this.layer);
         this.shapeLogic = new ShapesLogic(shapeService);
+        this.eraserTool = new EraserTool(this.shapeLogic);
         this.onMouseDown();
         this.onMouseMove();
         this.onMouseUp();
@@ -107,6 +110,10 @@ export class KonvaHandler {
 
     onMouseDown() {
         this.stage.on("mousedown touchdown", (e) => {
+            if (this.shapeService.getSelectedShape() === 'eraser') {
+                 this.eraserTool.startErasing(this.stage, this.layer);
+                 return;
+             }
             let Position = this.stage.getPointerPosition();
             if (!Position) return;
 
@@ -146,6 +153,10 @@ export class KonvaHandler {
 
     onMouseMove() {
         this.stage.on("mousemove touchmove", (e) => {
+            if (this.shapeService.getSelectedShape() === 'eraser') {
+                 this.eraserTool.continueErasing(this.stage, this.layer);
+                 return;
+             }
             let position = this.stage.getPointerPosition();
             if (!position) return;
 
@@ -209,6 +220,7 @@ export class KonvaHandler {
 
     onMouseUp() {
         this.stage.on("mouseup touchend", () => {
+            this.eraserTool.stopErasing();
             this.isSelecting = false;
 
             if (this.mockShape) {
