@@ -205,4 +205,43 @@ export class DrawingCanvas implements AfterViewInit {
       this.selectedShape.getLayer()?.batchDraw();
     }
   }
+  removeErasure() {
+    if (!this.selectedShape) return;
+
+    if (this.selectedShape instanceof Konva.Group) {
+      const group = this.selectedShape as Konva.Group;
+      const children = group.getChildren().slice();
+      let eraserFound = false;
+
+      children.forEach(child => {
+        if (child.name() === 'eraser') {
+          child.destroy();
+          eraserFound = true;
+        }
+      });
+
+      if (eraserFound) {
+        const layer = group.getLayer();
+        const remainingChildren = group.getChildren();
+
+        if (remainingChildren.length === 1 && layer) {
+          const originalShape = remainingChildren[0] as Konva.Shape;
+          
+          originalShape.moveTo(layer);
+          originalShape.draggable(true);
+          
+          this.shapesLogic.selectShape(originalShape);
+          this.shapesLogic.onDrawingShape(originalShape);
+          this.shapesLogic.onShapeDragEnd(originalShape);
+          this.shapesLogic.onShapeTransformEnd(originalShape);
+          this.shapesLogic.onShapeAttStyleChange(originalShape);
+
+          group.destroy();
+          this.shapeService.setKonvaShape(originalShape);
+        }
+        
+        layer?.batchDraw();
+      }
+    }
+  }
 }

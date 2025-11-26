@@ -19,6 +19,7 @@ import { ShapesLogic } from '../../components/drawing-canvas/shapes-logic';
 import { JsonTool } from '../../models/concreteClasses/json-tool';
 import { TextTool } from '../../models/concreteClasses/text-tool'; 
 import { EraserTool } from '../../models/concreteClasses/eraser-tool';
+import Konva from 'konva';
 @Component({
   selector: 'app-shapes-bar',
   imports: [CommonModule, FormsModule, MatMenuModule, MatButtonModule],
@@ -139,5 +140,52 @@ onAddText() {
   }
   onEraserClick() {
     this.onClick('eraser');
+  }
+  onRemoveErasure() {
+    const selectedShape = this.shapeService.getKonvaShape();
+    if (!selectedShape || !(selectedShape instanceof Konva.Group)) return;
+
+    const group = selectedShape as Konva.Group;
+    const children = group.getChildren().slice();
+    let eraserFound = false;
+
+    children.forEach(child => {
+      if (child.name() === 'eraser') {
+        child.destroy();
+        eraserFound = true;
+      }
+    });
+
+    if (eraserFound) {
+      const layer = group.getLayer();
+      if (!layer) return;
+
+      const remainingChildren = group.getChildren().slice();
+
+      remainingChildren.forEach(child => {
+        const absPos = child.getAbsolutePosition();
+        
+        child.moveTo(layer);
+        
+        child.position(absPos);
+        child.draggable(true);
+        
+        this.shapesLogic.selectShape(child);
+        this.shapesLogic.onDrawingShape(child);
+        this.shapesLogic.onShapeDragEnd(child);
+        this.shapesLogic.onShapeTransformEnd(child);
+        this.shapesLogic.onShapeAttStyleChange(child);
+      });
+
+      group.destroy();
+
+      if (remainingChildren.length > 0) {
+        this.shapeService.setKonvaShape(remainingChildren[remainingChildren.length - 1] as Konva.Shape);
+      } else {
+        this.shapeService.setKonvaShape(null);
+      }
+      
+      layer.batchDraw();
+    }
   }
 }

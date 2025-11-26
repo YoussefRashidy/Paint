@@ -57,30 +57,34 @@ export class EraserTool {
     });
 
     if (shapesHit.length > 0) {
-        let targetShape = shapesHit[0];
+        const masterGroup = new Konva.Group({
+            draggable: true,
+        });
+        layer.add(masterGroup);
 
-        if (targetShape.getParent() instanceof Konva.Group) {
-            const group = targetShape.getParent() as Konva.Group;
-            this.currentLine.moveTo(group);
-        } 
-        else {
-            const group = new Konva.Group({
-                draggable: true,
-            });
-            
-            layer.add(group);
-            
-            targetShape.draggable(false);
-            targetShape.off('mousedown touchstart dragstart dragmove dragend click tap dblclick dbltap');
+        const nodesToMove = new Set<Konva.Node>();
 
-            targetShape.moveTo(group);
-            this.currentLine.moveTo(group);
+        shapesHit.forEach(shape => {
+            const parent = shape.getParent();
+            if (parent instanceof Konva.Group) {
+                nodesToMove.add(parent);
+            } else {
+                nodesToMove.add(shape);
+            }
+        });
 
-            this.shapeLogic.selectShape(group);
-            this.shapeLogic.onDrawingShape(group);
-            this.shapeLogic.onShapeDragEnd(group);
-            this.shapeLogic.onShapeTransformEnd(group);
-        }
+        nodesToMove.forEach(node => {
+            node.draggable(false);
+            node.off('mousedown touchstart dragstart dragmove dragend click tap dblclick dbltap');
+            node.moveTo(masterGroup);
+        });
+
+        this.currentLine.moveTo(masterGroup);
+
+        this.shapeLogic.selectShape(masterGroup);
+        this.shapeLogic.onDrawingShape(masterGroup);
+        this.shapeLogic.onShapeDragEnd(masterGroup);
+        this.shapeLogic.onShapeTransformEnd(masterGroup);
     }
     
     this.currentLine = null;
