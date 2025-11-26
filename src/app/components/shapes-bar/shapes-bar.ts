@@ -19,6 +19,7 @@ import { ShapesLogic } from '../../components/drawing-canvas/shapes-logic';
 import { JsonTool } from '../../models/concreteClasses/json-tool';
 import { TextTool } from '../../models/concreteClasses/text-tool'; 
 import { EraserTool } from '../../models/concreteClasses/eraser-tool';
+import { XmlTool } from '../../models/concreteClasses/xml-tool';
 import Konva from 'konva';
 @Component({
   selector: 'app-shapes-bar',
@@ -39,7 +40,7 @@ export class ShapesBar {
   public imageTool = new ImageTool(this.shapesLogic);
   public jsonTool = new JsonTool(this.shapesLogic, this.shapeService);
   public eraserTool = new EraserTool(this.shapesLogic);
-
+  public xmlTool = new XmlTool(this.shapesLogic, this.shapeService);
   public textTool = new TextTool(this.shapesLogic);
 
   lineCaps: ('butt' | 'round' | 'square')[] = ['butt', 'round', 'square'];
@@ -190,5 +191,16 @@ onAddText() {
   }
   onExportImage() {
     this.jsonTool.exportAsImage();
+  }
+  onExportXml() {
+    this.xmlTool.exportCanvas();
+  }
+
+  onImportXml(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.xmlTool.importCanvas(file);
+      event.target.value = '';
+    }
   }
 }

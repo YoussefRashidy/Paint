@@ -16,27 +16,29 @@ export class JsonTool {
     this.shapeService.setKonvaShape(null);
     this.shapeService.setSelectedShapes([]);
     
-    const systemNodes = layer.getChildren().filter(node => 
-      node.getClassName() === 'Transformer' || node.name() === 'selectionRectangle'
-    );
+    layer.batchDraw();
 
-    systemNodes.forEach(node => node.remove());
+    const data = layer.toObject();
 
-    const json = layer.toJSON();
+    if (data.children) {
+        data.children = data.children.filter((child: any) => 
+            child.className !== 'Transformer' && 
+            child.attrs.name !== 'selectionRectangle'
+        );
+    }
 
-    systemNodes.forEach(node => layer.add(node));
+    this.processImagesForExport(data);
+
+    const json = JSON.stringify(data);
 
     const blob = new Blob([json], { type: 'application/json' });
-    const filename = `whiteboard-backup-${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.json`;
+    const filename = `whiteboard-${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.json`;
 
     try {
         if ('showSaveFilePicker' in window) {
             const handle = await (window as any).showSaveFilePicker({
                 suggestedName: filename,
-                types: [{
-                    description: 'JSON Whiteboard File',
-                    accept: { 'application/json': ['.json'] },
-                }],
+                types: [{ description: 'JSON File', accept: { 'application/json': ['.json'] } }],
             });
             const writable = await handle.createWritable();
             await writable.write(blob);
@@ -56,8 +58,6 @@ export class JsonTool {
             URL.revokeObjectURL(url);
         }
     }
-
-    layer.batchDraw();
   }
 
   importCanvas(file: File) {
@@ -81,15 +81,13 @@ export class JsonTool {
         let newShapes: Konva.Node[] = [];
 
         if (tempNode.getClassName() === 'Layer') {
-             newShapes = (tempNode as Konva.Layer).getChildren();
+             newShapes = (tempNode as Konva.Layer).getChildren().slice();
         } else {
              newShapes = [tempNode]; 
         }
 
         newShapes.forEach(shape => {
-            if (shape.getClassName() === 'Transformer' || shape.name() === 'selectionRectangle') {
-                return;
-            }
+            if (shape.getClassName() === 'Transformer' || shape.name() === 'selectionRectangle') return;
 
             shape.moveTo(layer);
             this.rebindEvents(shape);
@@ -119,19 +117,21 @@ export class JsonTool {
     const systemNodes = layer.getChildren().filter(node => 
       node.getClassName() === 'Transformer' || node.name() === 'selectionRectangle'
     );
-
     systemNodes.forEach(node => node.hide());
 
-    const dataURL = layer.toDataURL({ pixelRatio: 3 });
+    const dataURL = layer.toDataURL({ pixelRatio: 2 });
 
     systemNodes.forEach(node => node.show());
 
     const link = document.createElement('a');
-    link.download = `whiteboard-image-${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.png`;
+    link.download = `whiteboard-img-${Date.now()}.png`;
     link.href = dataURL;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  private processImagesForExport(data: any) {
   }
 
   private rebindEvents(node: Konva.Node) {
@@ -156,6 +156,11 @@ export class JsonTool {
         (node as Konva.Group).getChildren().forEach(child => {
              this.rebindEvents(child); 
         });
+        
+        this.shapeLogic.selectShape(node);
+        this.shapeLogic.onDrawingShape(node);
+        this.shapeLogic.onShapeDragEnd(node);
+        this.shapeLogic.onShapeTransformEnd(node);
     }
   }
 }

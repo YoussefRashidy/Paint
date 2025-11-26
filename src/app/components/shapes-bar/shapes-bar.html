@@ -1,13 +1,32 @@
 <main>
  <button mat-button [matMenuTriggerFor]="fileMenu">File</button>
+  <mat-menu #fileMenu="matMenu">
+  <button mat-menu-item (click)="onNew()" style="width: 100px; text-align:center; width:100%;">New</button>
+  
+  <button mat-menu-item (click)="fileInputJson.click()" style="width: 100px; text-align:center; width:100%;">Import JSON</button>
+  <button mat-menu-item (click)="onExportJson()" style="width: 100px; text-align:center; width:100%;">Export JSON</button>
+  
+  <button mat-menu-item (click)="fileInputXml.click()" style="width: 100px; text-align:center; width:100%;">Import XML</button>
+  <button mat-menu-item (click)="onExportXml()" style="width: 100px; text-align:center; width:100%;">Export XML</button>
+  
+  <button mat-menu-item (click)="onExportImage()" style="width: 100px; text-align:center; width:100%;">Export Image</button>
+</mat-menu>
 
-  <mat-menu #fileMenu="matMenu" >
-    <button mat-menu-item (click)="onNew()" style="width: 100px; text-align:center; width:100%;">New</button>
-    
-    <button mat-menu-item (click)="fileInput1.click()" style="width: 100px; text-align:center; width:100%;">Import</button>
+<input
+  type="file"
+  #fileInputJson
+  style="display: none"
+  (change)="onImportJson($event)"
+  accept=".json"
+/>
 
-    <button mat-menu-item (click)="onExportJson()" style="width: 100px; text-align:center; width:100%;">Export</button>
-  </mat-menu>
+<input
+  type="file"
+  #fileInputXml
+  style="display: none"
+  (change)="onImportXml($event)"
+  accept=".xml"
+/>
   <input
     type="file"
     #fileInput1
